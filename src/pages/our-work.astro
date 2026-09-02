@@ -1,0 +1,100 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+
+const projects = (await getCollection('projects')).sort(
+  (a, b) => a.data.order - b.data.order
+);
+---
+
+<BaseLayout title="Our Work" description="The actual programs and projects we're working on.">
+  <section class="section--tight page-header">
+    <div class="container stack reveal">
+      <span class="eyebrow">Our work</span>
+      <h1>What we're actually doing.</h1>
+      <p class="lead measure">
+        Real projects, with honest status labels. When something is still an
+        idea, we say so. When it's live, we'll show what came of it.
+      </p>
+    </div>
+  </section>
+
+  <!-- Problem + contribution -->
+  <section class="section">
+    <div class="container two-col">
+      <div class="stack reveal">
+        <span class="eyebrow">The problem</span>
+        <h2>Good causes often lack coordinated, motivated support.</h2>
+        <p class="muted">
+          Many grassroots organizations do excellent work but are stretched thin.
+          Meanwhile, students have time, energy, and skills but few structured
+          ways to help. We connect the two.
+        </p>
+      </div>
+      <div class="stack reveal">
+        <span class="eyebrow">What we contribute</span>
+        <h2>Coordination, funds, and hands-on skills.</h2>
+        <p class="muted">
+          We fundraise, volunteer, and build useful tools and materials — then
+          direct that effort toward vetted partners rather than reinventing what
+          already works.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Projects grid -->
+  <section class="section band">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow">Projects</span>
+        <h2>Current &amp; upcoming projects.</h2>
+      </div>
+      {projects.length > 0 ? (
+        <div class="grid grid--3 reveal">
+          {projects.map((p) => (
+            <ProjectCard
+              title={p.data.title}
+              summary={p.data.summary}
+              status={p.data.status}
+              partner={p.data.partner || undefined}
+              location={p.data.location}
+            />
+          ))}
+        </div>
+      ) : (
+        <p class="muted">Our first projects are being planned — check back soon.</p>
+      )}
+    </div>
+  </section>
+
+  <!-- Partnerships -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow">Partnerships</span>
+        <h2>Who we work with.</h2>
+        <p class="lead measure">
+          We'll list partner organizations here once agreements are real and
+          confirmed — never before.
+        </p>
+      </div>
+      <div class="empty-state reveal">
+        <p class="muted">No partnerships to announce yet. This section fills in as they're confirmed.</p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-header { padding-top: var(--space-xl); }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-xl); }
+  @media (max-width: 820px) { .two-col { grid-template-columns: 1fr; gap: var(--space-lg); } }
+  .section-head { margin-bottom: var(--space-xl); }
+  .section-head .lead { margin-top: var(--space-sm); }
+  .empty-state {
+    border: 1px dashed var(--color-line); border-radius: var(--radius);
+    padding: var(--space-xl); text-align: center; background: var(--color-surface);
+  }
+</style>

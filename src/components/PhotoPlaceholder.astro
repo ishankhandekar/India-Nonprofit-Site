@@ -1,0 +1,13 @@
+---
+// An honest, intentional stand-in for a REAL photo.
+// Usage: <PhotoPlaceholder label="Team at the community center" ratio="4 / 3" />
+// When you have the real image, replace this component with a plain <img>.
+interface Props {
+  label?: string;
+  ratio?: string; // CSS aspect-ratio, e.g. "4 / 3", "1 / 1", "16 / 9"
+}
+const { label = 'Add a real photo here', ratio = '4 / 3' } = Astro.props;
+---
+<div class="photo-ph" style={`aspect-ratio: ${ratio};`} role="img" aria-label={label}>
+  <span>📷 {label}</span>
+</div>

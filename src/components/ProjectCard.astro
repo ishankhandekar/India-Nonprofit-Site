@@ -1,0 +1,40 @@
+---
+// Renders one project as a card, driven by data from the content collection.
+interface Props {
+  title: string;
+  summary: string;
+  status: 'planning' | 'in-progress' | 'ongoing' | 'completed';
+  partner?: string;
+  location?: string;
+}
+const { title, summary, status, partner, location } = Astro.props;
+
+// Human-readable label for each status value.
+const statusLabel: Record<Props['status'], string> = {
+  planning: 'Planning',
+  'in-progress': 'In progress',
+  ongoing: 'Ongoing',
+  completed: 'Completed',
+};
+---
+<article class="card card--hover project-card">
+  <div class="project-card-top">
+    <span class:list={['badge', `badge--${status}`]}>{statusLabel[status]}</span>
+    {location && <span class="muted project-meta">{location}</span>}
+  </div>
+  <h3>{title}</h3>
+  <p class="muted">{summary}</p>
+  {partner && (
+    <p class="project-partner">
+      <span class="muted">In partnership with</span> {partner}
+    </p>
+  )}
+</article>
+
+<style>
+  .project-card { display: flex; flex-direction: column; gap: var(--space-sm); height: 100%; }
+  .project-card-top { display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm); }
+  .project-meta { font-size: var(--step--1); }
+  .project-partner { font-size: var(--step--1); margin-top: auto; padding-top: var(--space-xs); }
+  .project-partner span { display: block; letter-spacing: 0.04em; text-transform: uppercase; font-size: 0.72rem; }
+</style>

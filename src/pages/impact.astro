@@ -1,0 +1,91 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Impact & Transparency" description="Real accomplishments, honest metrics, and where support goes.">
+  <section class="section--tight page-header">
+    <div class="container stack reveal">
+      <span class="eyebrow">Impact &amp; transparency</span>
+      <h1>We'll show our impact — only when it's real.</h1>
+      <p class="lead measure">
+        We're just getting started, so this page is intentionally honest about
+        what we have and haven't done yet. It grows as our work does.
+      </p>
+    </div>
+  </section>
+
+  <!-- Honest empty-state for metrics -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow">By the numbers</span>
+        <h2>No inflated statistics here.</h2>
+        <p class="lead measure">
+          These placeholders fill in with real figures as we complete work.
+          Until a number is true and verifiable, it stays blank.
+        </p>
+      </div>
+      <div class="grid grid--3 reveal">
+        <div class="stat card">
+          <span class="stat-num">—</span>
+          <span class="muted">Funds raised</span>
+        </div>
+        <div class="stat card">
+          <span class="stat-num">—</span>
+          <span class="muted">Student volunteers</span>
+        </div>
+        <div class="stat card">
+          <span class="stat-num">—</span>
+          <span class="muted">Partner projects supported</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Where donations go -->
+  <section class="section band">
+    <div class="container two-col">
+      <div class="stack reveal">
+        <span class="eyebrow">Where support goes</span>
+        <h2>How we intend to handle money.</h2>
+        <p class="muted">
+          When we begin accepting donations, we'll explain clearly how funds are
+          used and what share reaches partners. This will be set up with adult
+          oversight and appropriate financial/accounting guidance.
+        </p>
+        <p class="muted">
+          We're not accepting online donations yet — see
+          <a href="/get-involved">Get Involved</a> for ways to help right now.
+        </p>
+      </div>
+      <div class="stack reveal">
+        <span class="eyebrow">Financial transparency</span>
+        <h2>Reports &amp; documents.</h2>
+        <p class="muted">
+          As the organization formalizes, we plan to publish financial summaries
+          here, and to pursue independent review as we grow. We won't claim any
+          certification or audit we don't actually have.
+        </p>
+        <div class="empty-state">
+          <p class="muted">No financial reports published yet.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-header { padding-top: var(--space-xl); }
+  .section-head { margin-bottom: var(--space-xl); }
+  .section-head .lead { margin-top: var(--space-sm); }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-xl); align-items: start; }
+  @media (max-width: 820px) { .two-col { grid-template-columns: 1fr; gap: var(--space-lg); } }
+
+  .stat { text-align: center; display: flex; flex-direction: column; gap: var(--space-xs); padding-block: var(--space-lg); }
+  .stat-num { font-family: var(--font-display); font-size: var(--step-4); color: var(--color-warm); line-height: 1; }
+
+  .empty-state {
+    border: 1px dashed var(--color-line); border-radius: var(--radius);
+    padding: var(--space-lg); text-align: center; background: var(--color-surface);
+  }
+</style>

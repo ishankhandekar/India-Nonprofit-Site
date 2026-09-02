@@ -1,0 +1,201 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import IndiaMap from '../components/IndiaMap.astro';
+
+// Pull featured projects from the content collection, sorted by `order`.
+const projects = (await getCollection('projects'))
+  .filter((p) => p.data.featured)
+  .sort((a, b) => a.data.order - b.data.order);
+---
+
+<BaseLayout>
+  <!-- ================= HERO ================= -->
+  <section class="hero">
+    <!-- Full-bleed photo, pinned right, left edge masked to fade into the page bg.
+         Swap /images/heropic.jpg for the real professional photo later. -->
+    <div class="hero-bg" role="img" aria-label="Students collaborating on a project"></div>
+    <div class="container hero-inner">
+      <div class="hero-copy stack reveal">
+        <span class="eyebrow">Student-led • Community-driven</span>
+        <h1>Turning young people into a force for impact.</h1>
+        <p class="lead measure">
+          We're a student-led nonprofit connecting young people in the U.S. with
+          grassroots efforts in India — through fundraising, volunteering, and
+          the skills we're building along the way.
+        </p>
+        <div class="hero-actions">
+          <a href="/our-work" class="btn btn--primary">Explore our work</a>
+          <a href="/get-involved" class="btn btn--secondary">Get involved</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ HOW WE WORK (process, not fake stats) ============ -->
+  <section class="section band">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow">How we work</span>
+        <h2>A simple, honest model.</h2>
+        <p class="lead measure">
+          We're new, so instead of big numbers we'll show you exactly how we
+          operate. This grows into a real impact summary as our work does.
+        </p>
+      </div>
+      <ol class="steps grid grid--3">
+        <li class="card reveal">
+          <span class="step-num">01</span>
+          <h3>Partner with vetted groups</h3>
+          <p class="muted">We work alongside established organizations doing real work on the ground, rather than acting alone.</p>
+        </li>
+        <li class="card reveal">
+          <span class="step-num">02</span>
+          <h3>Mobilize students</h3>
+          <p class="muted">Our members contribute time, skills, and fundraising — gaining real experience while helping.</p>
+        </li>
+        <li class="card reveal">
+          <span class="step-num">03</span>
+          <h3>Stay transparent</h3>
+          <p class="muted">We document what we actually do and where support goes, and we don't overstate our impact.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ================= FEATURED WORK ================= -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head section-head--row reveal">
+        <div>
+          <span class="eyebrow">Our work</span>
+          <h2>What we're working on now.</h2>
+        </div>
+        <a href="/our-work" class="btn btn--secondary">See all projects</a>
+      </div>
+
+      {projects.length > 0 ? (
+        <div class="grid grid--2 reveal">
+          {projects.map((p) => (
+            <ProjectCard
+              title={p.data.title}
+              summary={p.data.summary}
+              status={p.data.status}
+              partner={p.data.partner || undefined}
+              location={p.data.location}
+            />
+          ))}
+        </div>
+      ) : (
+        <p class="muted">Projects will appear here as we launch them.</p>
+      )}
+    </div>
+  </section>
+
+  <!-- ================= WHERE WE WORK (interactive map) ================= -->
+  <IndiaMap />
+
+  <!-- ================= WHY TRUST US ================= -->
+  <section class="section">
+    <div class="container why-grid">
+      <div class="section-head reveal">
+        <span class="eyebrow">Why trust us</span>
+        <h2>Credibility comes from being honest, not big.</h2>
+      </div>
+      <ul class="why-list reveal">
+        <li><strong>We show real work.</strong> Every project here is something we're actually doing — clearly labeled with its current status.</li>
+        <li><strong>Adults help oversee us.</strong> Students lead, with adult and eventual board oversight on money and partnerships.</li>
+        <li><strong>No inflated claims.</strong> We never invent statistics, partnerships, or accomplishments.</li>
+        <li><strong>Transparency by default.</strong> As we grow, our finances and outcomes will be documented openly.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ================= CTA BAND ================= -->
+  <section class="section">
+    <div class="container cta reveal">
+      <h2>Want to help us get started?</h2>
+      <p class="lead">Volunteer your time, partner with us, or spread the word.</p>
+      <div class="hero-actions">
+        <a href="/get-involved" class="btn btn--primary">Get involved</a>
+        <a href="/about" class="btn btn--secondary">Learn about us</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* --- Hero: full-bleed image pinned right, its left edge masked to fade into
+     the page background where the text sits. The fade reveals the real page bg,
+     so it always matches the theme (and updates if the palette changes). --- */
+  .hero {
+    position: relative;
+    min-height: calc(100svh - 72px);
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute;
+    inset: 0 0 0 auto;              /* pin to the right edge */
+    width: 60%;
+    background: url('/images/heropic.jpg') center / cover no-repeat;
+    /* stay fully transparent longer, then fade in — keeps the text area clean */
+    -webkit-mask-image: linear-gradient(to right, transparent 0, transparent 17%, #000 47%);
+            mask-image: linear-gradient(to right, transparent 0, transparent 17%, #000 47%);
+  }
+  .hero-inner { position: relative; z-index: 1; width: 100%; }
+  .hero-copy { max-width: 30rem; }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: var(--space-sm); margin-top: var(--space-sm); }
+
+  @media (max-width: 820px) {
+    /* Stack: the image becomes a top band that fades down into the page bg. */
+    .hero { display: block; min-height: 0; }
+    .hero-bg {
+      inset: 0 0 auto 0; width: 100%; height: 42svh;
+      -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent);
+              mask-image: linear-gradient(to bottom, #000 62%, transparent);
+    }
+    .hero-inner { padding-top: 44svh; padding-bottom: var(--space-xl); }
+    .hero-copy { max-width: none; }
+  }
+
+  /* --- Section headings --- */
+  .section-head { margin-bottom: var(--space-xl); }
+  .section-head .lead { margin-top: var(--space-sm); }
+  .section-head--row {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    gap: var(--space-md); flex-wrap: wrap;
+  }
+
+  /* --- Steps --- */
+  .steps { list-style: none; padding: 0; counter-reset: step; }
+  .steps .card { display: flex; flex-direction: column; gap: var(--space-xs); }
+  .step-num {
+    font-family: var(--font-display); font-size: var(--step-2);
+    color: var(--color-warm); line-height: 1;
+  }
+
+  /* --- Why --- */
+  .why-grid { display: grid; grid-template-columns: 1fr 1.1fr; gap: var(--space-xl); align-items: start; }
+  .why-grid .section-head { margin-bottom: 0; }
+  .why-list { list-style: none; padding: 0; display: grid; gap: var(--space-md); }
+  .why-list li { padding-left: 1.5rem; position: relative; }
+  .why-list li::before {
+    content: ""; position: absolute; left: 0; top: 0.6em;
+    width: 8px; height: 8px; border-radius: 50%; background: var(--color-warm);
+  }
+  @media (max-width: 820px) { .why-grid { grid-template-columns: 1fr; gap: var(--space-lg); } }
+
+  /* --- CTA --- */
+  .cta {
+    text-align: center; background: var(--color-ink); color: #fff;
+    border-radius: var(--radius-lg); padding: var(--space-2xl) var(--space-lg);
+  }
+  .cta h2 { color: #fff; }
+  .cta .lead { color: color-mix(in srgb, #fff 78%, transparent); margin: var(--space-sm) auto var(--space-md); }
+  .cta .hero-actions { justify-content: center; }
+  .cta .btn--secondary { color: #fff; border-color: color-mix(in srgb, #fff 30%, transparent); }
+  .cta .btn--secondary:hover { background: color-mix(in srgb, #fff 10%, transparent); border-color: #fff; }
+</style>

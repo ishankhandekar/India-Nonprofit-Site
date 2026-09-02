@@ -1,0 +1,146 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PhotoPlaceholder from '../components/PhotoPlaceholder.astro';
+
+// Placeholder team members. Replace names/photos as your team is ready.
+// `grade` renders as a badge above the name: '9th Grade', '10th Grade',
+// '11th Grade', or 'Adult Lead' (which gets a distinct color).
+const team = [
+  { name: 'Team Member', role: 'Founder and Adult Lead', grade: 'Adult Lead' },
+  { name: 'Team Member', role: 'Tech Lead', grade: '11th Grade' },
+  { name: 'Team Member', role: 'Partnerships Lead', grade: '11th Grade' },
+  { name: 'Team Member', role: 'Marketing Lead', grade: '10th Grade' },
+  { name: 'Team Member', role: 'Fundraising Lead', grade: '9th Grade' },
+];
+---
+
+<BaseLayout title="About" description="Why we exist, how we work, and who leads the organization.">
+  <!-- Page header -->
+  <section class="section--tight page-header">
+    <div class="container stack reveal">
+      <span class="eyebrow">About us</span>
+      <h1>We're students who wanted to do more than just donate.</h1>
+      <p class="lead measure">
+        This page explains why we exist, how we actually operate, and who's
+        behind the work. We'd rather be small and honest than big and vague.
+      </p>
+    </div>
+  </section>
+
+  <!-- Why we exist -->
+  <section class="section">
+    <div class="container two-col">
+      <div class="stack reveal">
+        <span class="eyebrow">Why we exist</span>
+        <h2>Turning good intentions into real, coordinated help.</h2>
+        <p class="muted">
+          Anyone can donate to a cause. We asked a harder question: what can a
+          group of motivated students actually <em>add</em>? Our answer is
+          coordination, fundraising, volunteer effort, and the technical and
+          organizational skills we're developing — directed toward partners
+          doing real work.
+        </p>
+        <p class="muted">
+          We're deliberately starting small. As we complete real projects, this
+          story will be backed by real outcomes rather than promises.
+        </p>
+      </div>
+      <div class="reveal"><PhotoPlaceholder label="The team, or a moment from your work" ratio="4 / 3" /></div>
+    </div>
+  </section>
+
+  <!-- Mission + how we work -->
+  <section class="section band">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow">How we work</span>
+        <h2>Our mission, and how we pursue it.</h2>
+        <p class="lead measure">
+          Our mission: <strong>to channel the energy and skills of young people
+          into meaningful support for communities in India.</strong>
+        </p>
+      </div>
+      <div class="grid grid--3">
+        <div class="card reveal">
+          <h3>Students lead</h3>
+          <p class="muted">Real responsibility sits with student members across tech, partnerships, marketing, and fundraising.</p>
+        </div>
+        <div class="card reveal">
+          <h3>Adults oversee</h3>
+          <p class="muted">An adult (and, as we grow, a board) provides oversight on finances, legal matters, and partnerships.</p>
+        </div>
+        <div class="card reveal">
+          <h3>Partners do the groundwork</h3>
+          <p class="muted">We support established organizations rather than duplicating what they already do well.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Leadership / team -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow">Student leadership</span>
+        <h2>The people behind it.</h2>
+        <p class="lead measure">Replace these with real names, roles, and photos as your team is ready to be public.</p>
+      </div>
+      <div class="grid grid--3 team-grid reveal">
+        {team.map((m) => (
+          <div class="team-card">
+            <PhotoPlaceholder label={`Photo of ${m.name}`} ratio="1 / 1" />
+            <div class="team-meta">
+              <span class:list={['grade-badge', { 'grade-badge--adult': m.grade === 'Adult Lead' }]}>{m.grade}</span>
+              <p class="team-name">{m.name}</p>
+              <p class="muted">{m.role}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Oversight note -->
+  <section class="section--tight">
+    <div class="container">
+      <div class="note reveal">
+        <h3>A note on oversight &amp; responsibility</h3>
+        <p class="muted">
+          Financial decisions, legal registration, and formal partnerships are
+          handled with adult supervision and appropriate professional advice.
+          We only publish accomplishments, figures, and partnerships that are
+          real and verifiable.
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-header { padding-top: var(--space-xl); }
+  .two-col { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: var(--space-xl); align-items: center; }
+  @media (max-width: 820px) { .two-col { grid-template-columns: 1fr; gap: var(--space-lg); } }
+
+  .section-head { margin-bottom: var(--space-xl); }
+  .section-head .lead { margin-top: var(--space-sm); }
+
+  .team-card { display: flex; flex-direction: column; gap: var(--space-sm); }
+  .team-meta { display: flex; flex-direction: column; gap: 0.25rem; align-items: flex-start; }
+  .team-name { font-weight: 600; }
+
+  /* Grade badge above each name. Adult Lead gets the cobalt accent; students the warm one. */
+  .grade-badge {
+    display: inline-flex;
+    font-size: var(--step--1); font-weight: 600;
+    padding: 0.2rem 0.6rem; border-radius: 999px;
+    background: var(--color-warm-soft); color: var(--color-warm);
+  }
+  .grade-badge--adult { background: var(--color-accent-soft); color: var(--color-accent); }
+
+  .note {
+    border: 1px solid var(--color-line); border-left: 4px solid var(--color-warm);
+    border-radius: var(--radius); padding: var(--space-lg);
+    background: var(--color-surface);
+  }
+  .note h3 { margin-bottom: var(--space-xs); }
+</style>
