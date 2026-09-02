@@ -41,6 +41,14 @@ const fullTitle = title ? `${title} · ${site.name}` : `${site.name}`;
   </head>
   <body>
     <a href="#main" class="skip-link">Skip to content</a>
+
+    <!-- Reading-progress bar, fixed above the sticky header. Fills as the
+         page is scrolled. Hidden (0 width) at the top, so it's invisible
+         until there's something to show progress on. -->
+    <div class="scroll-progress" aria-hidden="true">
+      <div class="scroll-progress-bar"></div>
+    </div>
+
     <Header />
     <main id="main">
       <slot />
@@ -48,6 +56,19 @@ const fullTitle = title ? `${title} · ${site.name}` : `${site.name}`;
     <Footer />
 
     <script is:inline>
+      // --- Reading-progress bar: fills as the page scrolls ----------------
+      const bar = document.querySelector('.scroll-progress-bar');
+      if (bar) {
+        const update = () => {
+          const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+          const pct = scrollable > 0 ? (window.scrollY / scrollable) * 100 : 0;
+          bar.style.width = pct + '%';
+        };
+        update();
+        window.addEventListener('scroll', update, { passive: true });
+        window.addEventListener('resize', update);
+      }
+
       // --- Subtle scroll-reveal for elements marked .reveal --------------
       // Uses IntersectionObserver (no library). Respects reduced-motion via
       // CSS (elements are already visible when motion is reduced).
@@ -72,3 +93,19 @@ const fullTitle = title ? `${title} · ${site.name}` : `${site.name}`;
     </script>
   </body>
 </html>
+
+<style>
+  .scroll-progress {
+    position: fixed; inset: 0 0 auto 0; height: 3px;
+    z-index: 60;               /* above the sticky header (z-index: 50) */
+    background: transparent;
+    pointer-events: none;
+  }
+  .scroll-progress-bar {
+    height: 100%; width: 0%;
+    background: var(--color-accent);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .scroll-progress-bar { transition: width 0.1s linear; }
+  }
+</style>
