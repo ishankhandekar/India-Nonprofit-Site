@@ -3,11 +3,19 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import IndiaMap from '../components/IndiaMap.astro';
+import Timeline from '../components/Timeline.astro';
 
 // Pull featured projects from the content collection, sorted by `order`.
 const projects = (await getCollection('projects'))
   .filter((p) => p.data.featured)
   .sort((a, b) => a.data.order - b.data.order);
+
+// Steps shown in the "How we work" timeline.
+const steps = [
+  { title: 'Partner with vetted groups', desc: 'We work alongside established organizations doing real work on the ground, rather than acting alone.' },
+  { title: 'Mobilize students', desc: 'Our members contribute time, skills, and fundraising — gaining real experience while helping.' },
+  { title: 'Stay transparent', desc: "We document what we actually do and where support goes, and we don't overstate our impact." },
+];
 ---
 
 <BaseLayout heroOverlay={true}>
@@ -55,23 +63,9 @@ const projects = (await getCollection('projects'))
           operate. This grows into a real impact summary as our work does.
         </p>
       </div>
-      <ol class="steps grid grid--3">
-        <li class="card reveal">
-          <span class="step-num">01</span>
-          <h3>Partner with vetted groups</h3>
-          <p class="muted">We work alongside established organizations doing real work on the ground, rather than acting alone.</p>
-        </li>
-        <li class="card reveal">
-          <span class="step-num">02</span>
-          <h3>Mobilize students</h3>
-          <p class="muted">Our members contribute time, skills, and fundraising — gaining real experience while helping.</p>
-        </li>
-        <li class="card reveal">
-          <span class="step-num">03</span>
-          <h3>Stay transparent</h3>
-          <p class="muted">We document what we actually do and where support goes, and we don't overstate our impact.</p>
-        </li>
-      </ol>
+      <div class="reveal">
+        <Timeline steps={steps} />
+      </div>
     </div>
   </section>
 
@@ -211,14 +205,6 @@ const projects = (await getCollection('projects'))
   .section-head--row {
     display: flex; align-items: flex-end; justify-content: space-between;
     gap: var(--space-md); flex-wrap: wrap;
-  }
-
-  /* --- Steps --- */
-  .steps { list-style: none; padding: 0; counter-reset: step; }
-  .steps .card { display: flex; flex-direction: column; gap: var(--space-xs); }
-  .step-num {
-    font-family: var(--font-display); font-size: var(--step-2);
-    color: var(--color-warm); line-height: 1;
   }
 
   /* --- Why --- */

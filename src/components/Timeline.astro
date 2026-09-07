@@ -1,0 +1,191 @@
+---
+// Interactive process timeline.
+// - Horizontal on desktop, vertical on mobile.
+// - Click a dot: the orange fill climbs the track to that dot, and when it
+//   arrives a card pops up (above the dot on desktop, to its right on mobile).
+// - Progressive enhancement: without JS every card is shown (see the no-JS rule).
+interface Step { title: string; desc: string; }
+interface Props { steps: Step[]; }
+const { steps } = Astro.props;
+---
+
+<div class="timeline" role="group" aria-label="How we work">
+  <div class="tl-rail">
+    <div class="tl-fill" aria-hidden="true"></div>
+    {steps.map((s, i) => (
+      <div class="tl-dot-wrap">
+        <div class="tl-card" id={`tl-card-${i}`} role="region" aria-label={s.title}>
+          <h3 class="tl-card-title"><span class="tl-card-num">0{i + 1}</span>{s.title}</h3>
+          <p class="muted">{s.desc}</p>
+        </div>
+        <button class="tl-dot" data-index={i} aria-expanded="false" aria-controls={`tl-card-${i}`}>
+          <span class="visually-hidden">{`Step ${i + 1}: ${s.title}`}</span>
+        </button>
+      </div>
+    ))}
+  </div>
+</div>
+
+<style>
+  /* Desktop: horizontal track, cards pop below the dots. */
+  .timeline { position: relative; padding-bottom: 104px; }
+
+  .tl-rail { position: relative; display: flex; align-items: center; height: 24px; }
+  .tl-rail::before {
+    content: ''; position: absolute; left: 0; right: 0; top: 50%;
+    height: 3px; transform: translateY(-50%);
+    background: var(--color-line); border-radius: 999px;
+  }
+  .tl-fill {
+    position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+    height: 3px; width: 0; z-index: 1;
+    background: var(--color-warm); border-radius: 999px;
+    transition: width 0.55s cubic-bezier(0.65, 0, 0.35, 1);
+  }
+
+  .tl-dot-wrap { flex: 1; display: flex; justify-content: center; position: relative; }
+  .tl-dot {
+    width: 22px; height: 22px; padding: 0; border-radius: 50%; z-index: 2; cursor: pointer;
+    background: var(--color-bg); border: 3px solid var(--color-line);
+    transition: border-color 0.25s ease, background-color 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease;
+  }
+  .tl-dot:hover { transform: scale(1.15); }
+  .tl-dot.is-reached { border-color: var(--color-warm); }
+  .tl-dot.is-active {
+    background: var(--color-warm); border-color: var(--color-warm);
+    box-shadow: 0 0 0 5px var(--color-warm-soft);
+  }
+  .tl-dot:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 3px; }
+
+  .tl-card {
+    position: absolute; top: calc(100% + 18px); left: 50%;
+    width: min(380px, 84vw); text-align: left;
+    transform: translate(-50%, -8px);
+    opacity: 0; visibility: hidden; pointer-events: none;
+    background: var(--color-surface); border: 1px solid var(--color-line);
+    border-radius: var(--radius); box-shadow: var(--shadow-md);
+    padding: 0.75rem 1.1rem;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  .tl-dot-wrap.is-open .tl-card {
+    opacity: 1; visibility: visible; pointer-events: auto;
+    transform: translate(-50%, 0);
+  }
+  .tl-card::after {
+    content: ''; position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
+    border: 8px solid transparent; border-bottom-color: var(--color-surface);
+  }
+  .tl-card-num { font-family: var(--font-body); font-weight: 700; color: var(--color-warm); margin-right: 0.5rem; }
+  .tl-card-title { font-size: var(--step-0); line-height: 1.25; margin: 0; }
+  .tl-card p { margin-top: 0.25rem; font-size: var(--step--1); line-height: 1.45; }
+
+  /* Mobile: vertical track, cards pop to the right of the dots. */
+  @media (max-width: 820px) {
+    .timeline { padding-top: 0; padding-left: 4px; }
+    .tl-rail { flex-direction: column; align-items: flex-start; height: auto; width: 24px; gap: 3.25rem; }
+    .tl-rail::before { left: 50%; right: auto; top: 11px; bottom: 11px; width: 3px; height: auto; transform: translateX(-50%); }
+    .tl-fill {
+      left: 50%; top: 11px; transform: translateX(-50%);
+      width: 3px; height: 0;
+      transition: height 0.55s cubic-bezier(0.65, 0, 0.35, 1);
+    }
+    .tl-dot-wrap { flex: none; width: 24px; justify-content: center; }
+    .tl-card {
+      bottom: auto; left: calc(100% + 22px); top: 50%;
+      transform: translate(12px, -50%);
+      width: min(230px, calc(100vw - 120px));
+    }
+    .tl-dot-wrap.is-open .tl-card { transform: translate(0, -50%); }
+    .tl-card::after {
+      top: 50%; bottom: auto; left: auto; right: 100%; transform: translateY(-50%);
+      border: 8px solid transparent; border-right-color: var(--color-surface);
+    }
+  }
+
+  /* No-JS fallback: show every card as a simple stacked list. */
+  :global(html:not(.js)) .timeline { padding: 0; }
+  :global(html:not(.js)) .tl-rail { flex-direction: column; align-items: stretch; height: auto; width: auto; gap: var(--space-md); }
+  :global(html:not(.js)) .tl-rail::before,
+  :global(html:not(.js)) .tl-fill,
+  :global(html:not(.js)) .tl-dot { display: none; }
+  :global(html:not(.js)) .tl-card {
+    position: static; opacity: 1; visibility: visible; transform: none;
+    width: auto; box-shadow: var(--shadow-sm);
+  }
+  :global(html:not(.js)) .tl-card::after { display: none; }
+</style>
+
+<script is:inline>
+  (function () {
+    document.querySelectorAll('.timeline').forEach((tl) => {
+      const rail = tl.querySelector('.tl-rail');
+      const fill = tl.querySelector('.tl-fill');
+      const wraps = Array.from(tl.querySelectorAll('.tl-dot-wrap'));
+      const dots = Array.from(tl.querySelectorAll('.tl-dot'));
+      if (!rail || !fill || !dots.length) return;
+
+      const vertical = () => window.matchMedia('(max-width: 820px)').matches;
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const CLIMB = 560; // ms — matches the fill transition
+      let current = -1, timer = null;
+
+      const showCard = (i) => wraps.forEach((w, j) => w.classList.toggle('is-open', j === i));
+      const hideCards = () => wraps.forEach((w) => w.classList.remove('is-open'));
+
+      function setAxis(target) {
+        if (vertical()) { fill.style.width = ''; fill.style.height = target + 'px'; }
+        else { fill.style.height = ''; fill.style.width = target + 'px'; }
+      }
+
+      function markDots(i) {
+        dots.forEach((d, j) => {
+          d.classList.toggle('is-reached', j <= i);
+          d.classList.toggle('is-active', j === i);
+          d.setAttribute('aria-expanded', String(j === i));
+        });
+      }
+
+      function select(i, animate) {
+        markDots(i);
+        hideCards();
+        current = i;
+        clearTimeout(timer);
+
+        const railRect = rail.getBoundingClientRect();
+        const dotRect = dots[i].getBoundingClientRect();
+        const target = vertical()
+          ? dotRect.top + dotRect.height / 2 - railRect.top
+          : dotRect.left + dotRect.width / 2 - railRect.left;
+
+        if (!animate || reduce) {
+          fill.style.transition = 'none';
+          setAxis(target);
+          showCard(i);
+          requestAnimationFrame(() => { fill.style.transition = ''; });
+        } else {
+          fill.style.transition = '';       // ensure the CSS transition runs
+          setAxis(target);
+          timer = setTimeout(() => showCard(i), CLIMB); // card pops once the fill arrives
+        }
+      }
+
+      dots.forEach((d, i) => d.addEventListener('click', () => select(i, true)));
+
+      let raf;
+      window.addEventListener('resize', () => {
+        cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(() => { if (current >= 0) select(current, false); });
+      });
+
+      // Climb to the first step when the timeline scrolls into view.
+      if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver((entries) => {
+          entries.forEach((en) => { if (en.isIntersecting) { select(0, true); io.disconnect(); } });
+        }, { threshold: 0.3 });
+        io.observe(tl);
+      } else {
+        select(0, false);
+      }
+    });
+  })();
+</script>
