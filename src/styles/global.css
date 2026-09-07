@@ -50,6 +50,7 @@
   --shadow-md: 0 18px 40px -24px rgba(33, 30, 26, 0.35);
 
   --container: 1120px;
+  --header-h: 60px;   /* header height — hero pulls up by this to sit behind it */
 }
 
 /* ==========================================================================
@@ -70,6 +71,10 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
+
+/* When the mobile full-screen menu is open: lock scroll, hide the progress bar. */
+body.menu-open { overflow: hidden; }
+body.menu-open .scroll-progress { display: none; }
 
 img, picture, svg { max-width: 100%; display: block; }
 

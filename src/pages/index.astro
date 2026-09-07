@@ -10,24 +10,35 @@ const projects = (await getCollection('projects'))
   .sort((a, b) => a.data.order - b.data.order);
 ---
 
-<BaseLayout>
+<BaseLayout heroOverlay={true}>
   <!-- ================= HERO ================= -->
+  <!-- Full-bleed photo + dark overlay + white text. Swap /images/heropic.jpg
+       for the real professional photo later. -->
   <section class="hero">
-    <!-- Full-bleed photo, pinned right, left edge masked to fade into the page bg.
-         Swap /images/heropic.jpg for the real professional photo later. -->
     <div class="hero-bg" role="img" aria-label="Students collaborating on a project"></div>
+    <div class="hero-scrim" aria-hidden="true"></div>
     <div class="container hero-inner">
-      <div class="hero-copy stack reveal">
-        <span class="eyebrow">Student-led • Community-driven</span>
+      <div class="hero-copy reveal">
         <h1>Turning young people into a force for impact.</h1>
-        <p class="lead measure">
+        <p class="hero-sub">
           We're a student-led nonprofit connecting young people in the U.S. with
           grassroots efforts in India — through fundraising, volunteering, and
           the skills we're building along the way.
         </p>
         <div class="hero-actions">
-          <a href="/our-work" class="btn btn--primary">Explore our work</a>
-          <a href="/get-involved" class="btn btn--secondary">Get involved</a>
+          <a href="/get-involved" class="btn hero-btn hero-btn--solid">Get involved</a>
+          <a href="/our-work" class="btn hero-btn hero-btn--ghost">See our projects</a>
+        </div>
+        <!-- Honest stats only: founding year + a transparency commitment. Edit freely. -->
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <span class="hero-stat-num">2026</span>
+            <span class="hero-stat-label">Founded this year</span>
+          </div>
+          <div class="hero-stat">
+            <span class="hero-stat-num">100%</span>
+            <span class="hero-stat-label">Funds tracked openly</span>
+          </div>
         </div>
       </div>
     </div>
@@ -126,39 +137,72 @@ const projects = (await getCollection('projects'))
 </BaseLayout>
 
 <style>
-  /* --- Hero: full-bleed image pinned right, its left edge masked to fade into
-     the page background where the text sits. The fade reveals the real page bg,
-     so it always matches the theme (and updates if the palette changes). --- */
+  /* --- Hero: full-bleed photo, dark overlay, white text on top. --- */
   .hero {
     position: relative;
-    min-height: calc(100svh - 72px);
+    min-height: 100svh;
+    margin-top: calc(-1 * var(--header-h)); /* sit behind the transparent header */
     display: flex;
     align-items: center;
     overflow: hidden;
   }
   .hero-bg {
-    position: absolute;
-    inset: 0 0 0 auto;              /* pin to the right edge */
-    width: 60%;
+    position: absolute; inset: 0;
     background: url('/images/heropic.jpg') center / cover no-repeat;
-    /* stay fully transparent longer, then fade in — keeps the text area clean */
-    -webkit-mask-image: linear-gradient(to right, transparent 0, transparent 17%, #000 47%);
-            mask-image: linear-gradient(to right, transparent 0, transparent 17%, #000 47%);
+  }
+  /* Darker on the left (behind the text), lighter on the right; plus a touch
+     at the bottom so the stat row stays legible. */
+  .hero-scrim {
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(to right, rgba(18, 22, 28, 0.9) 0%, rgba(18, 22, 28, 0.6) 42%, rgba(18, 22, 28, 0.25) 100%),
+      linear-gradient(to top, rgba(18, 22, 28, 0.55) 0%, transparent 45%);
   }
   .hero-inner { position: relative; z-index: 1; width: 100%; }
-  .hero-copy { max-width: 30rem; }
-  .hero-actions { display: flex; flex-wrap: wrap; gap: var(--space-sm); margin-top: var(--space-sm); }
+  .hero-copy { max-width: 42rem; color: #fff; }
+
+  .hero h1 {
+    font-family: var(--font-body);          /* bold sans, not the serif */
+    font-weight: 800;
+    font-size: clamp(2.25rem, 1.3rem + 3.2vw, 4rem);
+    line-height: 1.05; letter-spacing: -0.025em;
+    color: #fff;
+  }
+  .hero-sub {
+    margin-top: var(--space-md);
+    font-size: var(--step-1); line-height: 1.5;
+    color: rgba(255, 255, 255, 0.82); max-width: 46ch;
+  }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: var(--space-sm); margin-top: var(--space-lg); }
+
+  .hero-btn { padding: 0.9rem 1.6rem; }
+  .hero-btn--solid { background: var(--color-warm); color: #fff; }
+  .hero-btn--solid:hover { background: var(--color-warm-hover); }
+  .hero-btn--ghost {
+    background: rgba(255, 255, 255, 0.06); color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.45);
+  }
+  .hero-btn--ghost:hover { background: rgba(255, 255, 255, 0.14); border-color: #fff; }
+
+  .hero-stats { display: flex; gap: clamp(2rem, 6vw, 4rem); margin-top: var(--space-xl); }
+  .hero-stat-num {
+    display: block; font-family: var(--font-body); font-weight: 800;
+    font-size: var(--step-3); line-height: 1; color: var(--color-warm);
+  }
+  .hero-stat-label {
+    display: block; margin-top: 0.35rem;
+    font-size: var(--step--1); color: rgba(255, 255, 255, 0.8);
+  }
 
   @media (max-width: 820px) {
-    /* Stack: the image becomes a top band that fades down into the page bg. */
-    .hero { display: block; min-height: 0; }
-    .hero-bg {
-      inset: 0 0 auto 0; width: 100%; height: 42svh;
-      -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent);
-              mask-image: linear-gradient(to bottom, #000 62%, transparent);
-    }
-    .hero-inner { padding-top: 44svh; padding-bottom: var(--space-xl); }
-    .hero-copy { max-width: none; }
+    /* Full viewport, content anchored to the bottom (keeps the buttons low),
+       with a smaller headline/subhead so nothing overlaps the header. */
+    .hero { min-height: 100svh; align-items: flex-end; }
+    .hero-inner { padding-bottom: var(--space-xl); }
+    .hero h1 { font-size: clamp(1.6rem, 7.5vw, 2.3rem); line-height: 1.1; }
+    .hero-sub { font-size: var(--step-0); margin-top: var(--space-sm); }
+    .hero-actions { margin-top: var(--space-md); }
+    .hero-stats { gap: var(--space-xl); margin-top: var(--space-lg); }
   }
 
   /* --- Section headings --- */

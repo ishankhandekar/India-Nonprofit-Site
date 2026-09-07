@@ -4,13 +4,19 @@
 // bottom of this file — a simple example of JS (no framework needed).
 import { site, nav } from '../config';
 
+interface Props {
+  // Transparent white-text header over a hero image; turns solid on scroll.
+  heroOverlay?: boolean;
+}
+const { heroOverlay = false } = Astro.props;
+
 // Astro gives us the current URL so we can highlight the active page.
 const path = Astro.url.pathname;
 const isActive = (href: string) =>
   href === '/' ? path === '/' : path.startsWith(href);
 ---
 
-<header class="site-header">
+<header class:list={['site-header', { 'site-header--overlay': heroOverlay }]}>
   <div class="container header-inner">
     <a href="/" class="wordmark" aria-label={`${site.name} — home`}>
       <span class="wordmark-mark" aria-hidden="true"></span>
@@ -28,22 +34,33 @@ const isActive = (href: string) =>
         <span class="nav-toggle-bars" aria-hidden="true"></span>
       </button>
 
-      <ul id="primary-menu" class="nav-list">
-        {nav.map((item) => (
-          <li>
-            <a
-              href={item.href}
-              class:list={['nav-link', { 'is-active': isActive(item.href) }]}
-              aria-current={isActive(item.href) ? 'page' : undefined}
-            >
-              {item.label}
+      <div id="primary-menu" class="nav-menu">
+        <ul class="nav-list">
+          {nav.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                class:list={['nav-link', { 'is-active': isActive(item.href) }]}
+                aria-current={isActive(item.href) ? 'page' : undefined}
+              >
+                {item.label}
+              </a>
+            </li>
+          ))}
+          <li class="nav-cta">
+            <a href="/get-involved" class="btn btn--primary nav-donate">
+              Donate <span class="nav-donate-arrow" aria-hidden="true">→</span>
             </a>
           </li>
-        ))}
-        <li class="nav-cta">
-          <a href="/get-involved" class="btn btn--primary">Donate</a>
-        </li>
-      </ul>
+        </ul>
+
+        <!-- Contact block — visible only in the full-screen mobile menu. -->
+        <div class="nav-contact">
+          <a class="nav-contact-email" href={`mailto:${site.email}`}>{site.email}</a>
+          <a class="nav-contact-social" href={site.social.instagram}>Instagram ↗</a>
+          <a class="nav-contact-social" href={site.social.linkedin}>LinkedIn ↗</a>
+        </div>
+      </div>
     </nav>
   </div>
 </header>
@@ -53,18 +70,39 @@ const isActive = (href: string) =>
     position: sticky; top: 0; z-index: 50;
     background: color-mix(in srgb, var(--color-bg) 88%, transparent);
     backdrop-filter: blur(8px);
-    border-bottom: 1px solid transparent;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    transition: background-color 0.25s ease, box-shadow 0.25s ease;
   }
-  /* .is-scrolled is toggled by JS once the user scrolls down */
+  /* .is-scrolled is toggled by JS once the user scrolls down.
+     Hairline + shadow via box-shadow so the header height stays exactly --header-h. */
   .site-header.is-scrolled {
-    border-bottom-color: var(--color-line);
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 1px 0 var(--color-line), var(--shadow-sm);
+  }
+
+  /* --- Overlay mode: transparent, white text over a hero, until scrolled --- */
+  .site-header--overlay:not(.is-scrolled) {
+    background: transparent;
+    backdrop-filter: none;
+    box-shadow: none;
+  }
+  .site-header--overlay:not(.is-scrolled) .wordmark { color: #fff; }
+  .site-header--overlay:not(.is-scrolled) .nav-toggle { border-color: rgba(255, 255, 255, 0.5); }
+  .site-header--overlay:not(.is-scrolled) .nav-toggle-bars,
+  .site-header--overlay:not(.is-scrolled) .nav-toggle-bars::before,
+  .site-header--overlay:not(.is-scrolled) .nav-toggle-bars::after { background: #fff; }
+
+  /* Nav links are white only on desktop; on mobile they live in a white dropdown. */
+  @media (min-width: 821px) {
+    .site-header--overlay:not(.is-scrolled) .nav-link { color: rgba(255, 255, 255, 0.82); }
+    .site-header--overlay:not(.is-scrolled) .nav-link:hover,
+    .site-header--overlay:not(.is-scrolled) .nav-link.is-active { color: #fff; }
+    .site-header--overlay:not(.is-scrolled) .nav-link.is-active::after { background: #fff; }
+    .site-header--overlay:not(.is-scrolled) .nav-cta .btn--primary { background: var(--color-warm); }
+    .site-header--overlay:not(.is-scrolled) .nav-cta .btn--primary:hover { background: var(--color-warm-hover); }
   }
 
   .header-inner {
     display: flex; align-items: center; justify-content: space-between;
-    min-height: 72px; gap: var(--space-md);
+    min-height: var(--header-h); gap: var(--space-md);
   }
 
   .wordmark {
@@ -78,6 +116,9 @@ const isActive = (href: string) =>
     /* subtle geometric motif — a nod to identity without flags/stereotypes */
     box-shadow: inset 0 0 0 3px color-mix(in srgb, #fff 70%, transparent);
   }
+
+  .nav-menu { display: flex; align-items: center; }
+  .nav-contact { display: none; }   /* only shown in the mobile full-screen menu */
 
   .nav-list {
     list-style: none; padding: 0; display: flex; align-items: center;
@@ -96,12 +137,19 @@ const isActive = (href: string) =>
     height: 2px; background: var(--color-accent); border-radius: 2px;
   }
 
+  /* Arrow on the Donate button — nudges right on hover. */
+  .nav-donate-arrow { display: inline-block; transition: transform 0.18s ease; }
+  .nav-donate:hover .nav-donate-arrow { transform: translateX(3px); }
+
   .nav-toggle { display: none; }
 
-  /* --- Mobile --- */
+  /* --- Mobile: full-screen menu that slides up --- */
   @media (max-width: 820px) {
+    /* Keep the logo + hamburger above the menu overlay so the X can close it. */
+    .wordmark { position: relative; z-index: 2; }
     .nav-toggle {
       display: inline-flex; align-items: center; justify-content: center;
+      position: relative; z-index: 3;
       width: 44px; height: 44px; background: transparent;
       border: 1px solid var(--color-line); border-radius: 10px; cursor: pointer;
     }
@@ -110,51 +158,108 @@ const isActive = (href: string) =>
     .nav-toggle-bars::after {
       content: ""; display: block; width: 20px; height: 2px;
       background: var(--color-ink); border-radius: 2px;
-      transition: transform 0.2s ease, opacity 0.2s ease;
+      transition: transform 0.2s ease, opacity 0.2s ease, background-color 0.2s ease;
     }
     .nav-toggle-bars { position: relative; }
     .nav-toggle-bars::before { position: absolute; top: -6px; }
     .nav-toggle-bars::after { position: absolute; top: 6px; }
-    /* Animate into an X when open */
     .nav-toggle[aria-expanded='true'] .nav-toggle-bars { background: transparent; }
     .nav-toggle[aria-expanded='true'] .nav-toggle-bars::before { transform: translateY(6px) rotate(45deg); }
     .nav-toggle[aria-expanded='true'] .nav-toggle-bars::after { transform: translateY(-6px) rotate(-45deg); }
 
-    .nav-list {
-      position: absolute; left: 0; right: 0; top: 100%;
-      flex-direction: column; align-items: stretch; gap: 0;
-      background: var(--color-surface);
-      border-bottom: 1px solid var(--color-line);
-      box-shadow: var(--shadow-md);
-      padding: var(--space-sm) var(--space-md) var(--space-md);
-      /* Hidden by default; JS toggles [data-open] */
-      display: none;
+    /* The overlay: fixed, dark, slides up from the bottom. */
+    .nav-menu {
+      position: fixed; inset: 0; z-index: 1;
+      background: var(--color-bg);
+      flex-direction: column; align-items: stretch;
+      padding: calc(var(--header-h) + var(--space-md)) var(--space-lg) var(--space-xl);
+      overflow-y: auto;
+      transform: translateY(100%);
+      opacity: 0; visibility: hidden;
+      transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+                  opacity 0.35s ease, visibility 0.45s;
     }
-    .nav-list[data-open='true'] { display: flex; }
-    .nav-link { padding: 0.9rem 0; border-bottom: 1px solid var(--color-line); display: block; }
-    .nav-link.is-active::after { display: none; }
-    .nav-cta { padding-top: var(--space-md); }
-    .nav-cta .btn { width: 100%; justify-content: center; }
+    .nav-menu[data-open='true'] { transform: translateY(0); opacity: 1; visibility: visible; }
+
+    /* Numbered list, vertically centred. */
+    .nav-menu .nav-list {
+      counter-reset: navnum;
+      flex: 1; flex-direction: column; align-items: stretch; justify-content: center;
+      gap: 0;
+    }
+    .nav-menu .nav-list li { border-top: 1px solid var(--color-line); }
+
+    .nav-menu .nav-link {
+      display: flex; align-items: baseline; gap: 1rem;
+      padding: 1.05rem 0; border: none; color: var(--color-ink);
+      font-family: var(--font-body); font-weight: 700; letter-spacing: -0.02em;
+      font-size: clamp(1.9rem, 8vw, 2.6rem);
+    }
+    .nav-menu .nav-link::before {
+      counter-increment: navnum;
+      content: counter(navnum, decimal-leading-zero);
+      color: var(--color-warm); font-weight: 600;
+      font-size: 0.8rem; letter-spacing: 0.02em;
+      align-self: flex-start; margin-top: 0.7rem; min-width: 1.4rem;
+    }
+    .nav-menu .nav-link.is-active { color: var(--color-warm); }
+    .nav-menu .nav-link.is-active::after { display: none; }
+
+    /* Donate as a full-width button under the list. */
+    .nav-menu .nav-cta { border-top: 1px solid var(--color-line); padding-top: 1.25rem; }
+    .nav-menu .nav-cta .btn {
+      width: 100%; justify-content: center;
+      background: var(--color-warm); color: #fff;
+    }
+    .nav-menu .nav-cta .btn:hover { background: var(--color-warm-hover); }
+
+    /* Contact links pinned to the bottom. */
+    .nav-contact {
+      display: flex; flex-direction: column; gap: 0.55rem; margin-top: var(--space-lg);
+    }
+    .nav-contact a { text-decoration: none; font-size: var(--step-0); width: fit-content; }
+    .nav-contact-email { color: var(--color-ink-soft); }
+    .nav-contact-social { color: var(--color-warm); }
+    .nav-contact a:hover { color: var(--color-ink); }
+
+    /* When the menu is open, blend the header bar into the white menu. */
+    .site-header.is-menu-open {
+      background: transparent; backdrop-filter: none; box-shadow: none;
+    }
+    .site-header.is-menu-open .wordmark { color: var(--color-ink); }
+    .site-header.is-menu-open .nav-toggle { border-color: var(--color-line); }
+    .site-header.is-menu-open .nav-toggle-bars,
+    .site-header.is-menu-open .nav-toggle-bars::before,
+    .site-header.is-menu-open .nav-toggle-bars::after { background: var(--color-ink); }
   }
 </style>
 
 <script is:inline>
-  // --- Mobile menu toggle -------------------------------------------------
+  const header = document.querySelector('.site-header');
   const toggle = document.querySelector('.nav-toggle');
   const menu = document.getElementById('primary-menu');
 
-  if (toggle && menu) {
+  // --- Full-screen mobile menu -------------------------------------------
+  if (toggle && menu && header) {
+    const setMenu = (open) => {
+      toggle.setAttribute('aria-expanded', String(open));
+      menu.dataset.open = String(open);
+      header.classList.toggle('is-menu-open', open);
+      document.body.classList.toggle('menu-open', open); // locks scroll (global.css)
+    };
     toggle.addEventListener('click', () => {
-      const open = toggle.getAttribute('aria-expanded') === 'true';
-      toggle.setAttribute('aria-expanded', String(!open));
-      menu.dataset.open = String(!open);
+      setMenu(toggle.getAttribute('aria-expanded') !== 'true');
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') setMenu(false);
     });
   }
 
-  // --- Add a shadow to the header once the page is scrolled --------------
-  const header = document.querySelector('.site-header');
+  // --- Header turns solid just after the top -----------------------------
   if (header) {
-    const onScroll = () => header.classList.toggle('is-scrolled', window.scrollY > 8);
+    const onScroll = () => {
+      header.classList.toggle('is-scrolled', window.scrollY > 20);
+    };
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
   }
