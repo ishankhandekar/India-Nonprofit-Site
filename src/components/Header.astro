@@ -19,7 +19,16 @@ const isActive = (href: string) =>
 <header class:list={['site-header', { 'site-header--overlay': heroOverlay }]}>
   <div class="container header-inner">
     <a href="/" class="wordmark" aria-label={`${site.name} — home`}>
-      <span class="wordmark-mark" aria-hidden="true"></span>
+      <span class="wordmark-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="32" height="32" rx="9" fill="var(--color-warm)" />
+          <!-- A rising bird: two swept wings gliding up-right ("udaan" = flight). -->
+          <path
+            d="M7 20 C 11 15.5, 14.5 15.5, 16 18.5 C 17.5 15.5, 21 12, 25.5 11"
+            stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"
+          />
+        </svg>
+      </span>
       {site.name}
     </a>
 
@@ -111,11 +120,9 @@ const isActive = (href: string) =>
     font-size: var(--step-1); text-decoration: none; color: var(--color-ink);
   }
   .wordmark-mark {
-    width: 22px; height: 22px; border-radius: 7px;
-    background: var(--color-warm);
-    /* subtle geometric motif — a nod to identity without flags/stereotypes */
-    box-shadow: inset 0 0 0 3px color-mix(in srgb, #fff 70%, transparent);
+    display: inline-flex; width: 28px; height: 28px;
   }
+  .wordmark-mark svg { width: 100%; height: 100%; display: block; }
 
   .nav-menu { display: flex; align-items: center; }
   .nav-contact { display: none; }   /* only shown in the mobile full-screen menu */

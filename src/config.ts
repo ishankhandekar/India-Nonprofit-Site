@@ -6,9 +6,9 @@
 
 export const site = {
   // Your organization's name. Used in the header wordmark, footer, page titles.
-  name: 'Your Organization',
+  name: 'Udaan Foundation',
   // A shorter version if the full name is long (used in tight spaces).
-  shortName: 'Your Org',
+  shortName: 'Udaan',
   // One-line description used for SEO and social previews.
   description:
     'A student-led nonprofit connecting young people in the U.S. with community efforts in India.',
