@@ -53,13 +53,14 @@ const projects = (await getCollection('projects')).sort(
       </div>
       {projects.length > 0 ? (
         <div class="grid grid--3 reveal">
-          {projects.map((p) => (
+          {projects.map((p, i) => (
             <ProjectCard
               title={p.data.title}
               summary={p.data.summary}
               status={p.data.status}
-              partner={p.data.partner || undefined}
-              location={p.data.location}
+              category={p.data.category}
+              image={p.data.image || undefined}
+              index={i + 1}
             />
           ))}
         </div>

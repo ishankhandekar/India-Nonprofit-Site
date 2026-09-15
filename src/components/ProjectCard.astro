@@ -1,40 +1,104 @@
 ---
-// Renders one project as a card, driven by data from the content collection.
+// Renders one project as a photo-forward card: image (or a themed placeholder)
+// with a category chip and a large index number, then title, summary, and a
+// "Learn more" link. Driven by data from the content collection.
 interface Props {
   title: string;
   summary: string;
   status: 'planning' | 'in-progress' | 'ongoing' | 'completed';
   partner?: string;
   location?: string;
+  category?: string;
+  image?: string;
+  index?: number; // 1-based; shown as the large 01 / 02 / 03 numeral
+  href?: string;
 }
-const { title, summary, status, partner, location } = Astro.props;
+const {
+  title, summary, status, category, image,
+  index, href = '/our-work',
+} = Astro.props;
 
-// Human-readable label for each status value.
+// Human-readable label for each status value (fallback when no category set).
 const statusLabel: Record<Props['status'], string> = {
   planning: 'Planning',
   'in-progress': 'In progress',
   ongoing: 'Ongoing',
   completed: 'Completed',
 };
+const chip = category || statusLabel[status];
+const num = index != null ? String(index).padStart(2, '0') : null;
 ---
-<article class="card card--hover project-card">
-  <div class="project-card-top">
-    <span class:list={['badge', `badge--${status}`]}>{statusLabel[status]}</span>
-    {location && <span class="muted project-meta">{location}</span>}
+<article class="program-card">
+  <div class="program-media">
+    {image
+      ? <img class="program-img" src={image} alt="" loading="lazy" />
+      : <div class="program-img program-img--ph" aria-hidden="true"></div>}
+    <div class="program-scrim" aria-hidden="true"></div>
+    <span class="program-chip">{chip}</span>
+    {num && <span class="program-num" aria-hidden="true">{num}</span>}
   </div>
-  <h3>{title}</h3>
-  <p class="muted">{summary}</p>
-  {partner && (
-    <p class="project-partner">
-      <span class="muted">In partnership with</span> {partner}
-    </p>
-  )}
+
+  <div class="program-body">
+    <h3 class="program-title">{title}</h3>
+    <p class="muted program-summary">{summary}</p>
+    <a class="program-more" href={href}>
+      Learn more <span class="program-more-arrow" aria-hidden="true">↗</span>
+    </a>
+  </div>
 </article>
 
 <style>
-  .project-card { display: flex; flex-direction: column; gap: var(--space-sm); height: 100%; }
-  .project-card-top { display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm); }
-  .project-meta { font-size: var(--step--1); }
-  .project-partner { font-size: var(--step--1); margin-top: auto; padding-top: var(--space-xs); }
-  .project-partner span { display: block; letter-spacing: 0.04em; text-transform: uppercase; font-size: 0.72rem; }
+  .program-card {
+    display: flex; flex-direction: column; height: 100%; overflow: hidden;
+    background: var(--color-surface);
+    border: 1px solid var(--color-line); border-radius: var(--radius-lg);
+    transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .program-card:hover {
+    border-color: color-mix(in srgb, var(--color-warm) 45%, var(--color-line));
+    transform: translateY(-3px); box-shadow: var(--shadow-md);
+  }
+
+  /* Media: photo (or placeholder) with a category chip + big numeral. */
+  .program-media { position: relative; aspect-ratio: 16 / 10; overflow: hidden; }
+  .program-img { width: 100%; height: 100%; object-fit: cover; }
+  .program-img--ph {
+    background:
+      radial-gradient(120% 120% at 20% 0%, color-mix(in srgb, var(--color-warm) 20%, var(--color-surface)) 0%, var(--color-surface) 60%),
+      var(--color-surface-warm);
+  }
+  .program-scrim {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(8, 12, 10, 0.55) 0%, transparent 45%);
+  }
+  .program-chip {
+    position: absolute; top: 0.85rem; left: 0.85rem;
+    font-size: 0.7rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 0.3rem 0.6rem; border-radius: 999px;
+    color: #fff; background: rgba(207, 112, 67, 0.85);
+    backdrop-filter: blur(4px);
+  }
+  .program-num {
+    position: absolute; right: 0.9rem; bottom: 0.5rem;
+    font-family: var(--font-display); font-weight: 600; font-size: 2.6rem; line-height: 1;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  /* Body: title, summary, and a divider + "Learn more" link pinned to the bottom. */
+  .program-body { display: flex; flex-direction: column; flex: 1; padding: var(--space-lg); }
+  .program-title { font-size: var(--step-1); }
+  .program-summary { margin-top: 0.55rem; font-size: var(--step-0); }
+  .program-more {
+    margin-top: var(--space-md); padding-top: var(--space-md);
+    border-top: 1px solid var(--color-line);
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    color: var(--color-warm); font-weight: 600; font-size: var(--step-0);
+    text-decoration: none;
+  }
+  .program-more-arrow { display: inline-block; transition: transform 0.18s ease; }
+  .program-more:hover .program-more-arrow { transform: translate(2px, -2px); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .program-card:hover { transform: none; }
+  }
 </style>

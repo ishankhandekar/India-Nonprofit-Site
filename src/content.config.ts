@@ -21,6 +21,11 @@ const projects = defineCollection({
     // Optional real-world context. Omit if not applicable.
     partner: z.string().optional(),
     location: z.string().optional(),
+    // Short category label shown on the card (e.g. "Education"). Optional.
+    category: z.string().optional(),
+    // Path to a photo in /public (e.g. "/images/education.jpg"). Optional —
+    // cards fall back to a themed placeholder panel when there's no photo yet.
+    image: z.string().optional(),
     // Controls display order on the Our Work page (lower = first).
     order: z.number().default(0),
     // Set true to feature this project on the homepage.

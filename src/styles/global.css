@@ -4,23 +4,23 @@
    across every page. Keeping this small and restrained is the point.
    ========================================================================== */
 :root {
-  /* --- Base: cool neutral --- */
-  --color-bg: #f6f8fa;          /* cool off-white page background */
-  --color-surface: #ffffff;     /* cards / raised areas */
-  --color-surface-warm: #eef1f6;/* cool light fill for bands (name kept for compatibility) */
-  --color-ink: #14181f;         /* cool near-black — primary text */
-  --color-ink-soft: #586170;    /* muted cool gray — secondary text */
-  --color-line: #e4e8ee;        /* hairline borders */
+  /* --- Base: deep green (dark theme) --- */
+  --color-bg: #0f1613;          /* deep green-black page background */
+  --color-surface: #16201b;     /* cards / raised areas — a subtle lift */
+  --color-surface-warm: #121a15;/* slightly different green for bands */
+  --color-ink: #eef1ec;         /* warm off-white — primary text */
+  --color-ink-soft: #97a79c;    /* muted sage gray — secondary text */
+  --color-line: #29352e;        /* subtle borders on dark */
 
   /* --- Primary accent: cobalt (interactive elements, CTAs, focus) --- */
-  --color-accent: #2563eb;
-  --color-accent-hover: #1d4ed8;
-  --color-accent-soft: #e6eefb; /* tint for accent backgrounds */
+  --color-accent: #4b90f7;
+  --color-accent-hover: #6aa6f8;
+  --color-accent-soft: rgba(75, 144, 247, 0.16); /* tint for accent backgrounds */
 
-  /* --- Secondary accent: muted orange (subtle brand/identity touches) --- */
-  --color-warm: #c26a3c;        /* muted saffron-orange */
-  --color-warm-hover: #a85528;
-  --color-warm-soft: #f5e8dd;   /* tint for warm backgrounds */
+  /* --- Secondary accent: warm orange (brand/identity, CTAs) --- */
+  --color-warm: #cf7043;        /* saffron-orange, a touch brighter for dark */
+  --color-warm-hover: #b85c30;
+  --color-warm-soft: rgba(207, 112, 67, 0.22);   /* tint / glow for warm accents */
 
   /* --- Typography --- */
   --font-display: 'Fraunces Variable', 'Fraunces', Georgia, 'Times New Roman', serif;
@@ -46,8 +46,8 @@
   /* --- Shape --- */
   --radius: 14px;
   --radius-lg: 22px;
-  --shadow-sm: 0 1px 2px rgba(33, 30, 26, 0.06);
-  --shadow-md: 0 18px 40px -24px rgba(33, 30, 26, 0.35);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 20px 45px -22px rgba(0, 0, 0, 0.75);
 
   --container: 1120px;
   --header-h: 60px;   /* header height — hero pulls up by this to sit behind it */
@@ -141,7 +141,7 @@ a { color: inherit; text-decoration-color: color-mix(in srgb, var(--color-accent
 }
 .skip-link {
   position: absolute; left: var(--space-md); top: -100px;
-  background: var(--color-ink); color: #fff;
+  background: var(--color-accent); color: #fff;
   padding: 0.6rem 1rem; border-radius: 8px; z-index: 100;
   transition: top 0.2s ease;
 }

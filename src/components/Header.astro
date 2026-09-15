@@ -49,7 +49,7 @@ const isActive = (href: string) =>
           ))}
           <li class="nav-cta">
             <a href="/get-involved" class="btn btn--primary nav-donate">
-              Donate <span class="nav-donate-arrow" aria-hidden="true">→</span>
+              Donate <span class="nav-donate-arrow" aria-hidden="true">↗</span>
             </a>
           </li>
         </ul>
@@ -137,9 +137,9 @@ const isActive = (href: string) =>
     height: 2px; background: var(--color-accent); border-radius: 2px;
   }
 
-  /* Arrow on the Donate button — nudges right on hover. */
+  /* Diagonal arrow on the Donate button — nudges up-right on hover. */
   .nav-donate-arrow { display: inline-block; transition: transform 0.18s ease; }
-  .nav-donate:hover .nav-donate-arrow { transform: translateX(3px); }
+  .nav-donate:hover .nav-donate-arrow { transform: translate(2px, -2px); }
 
   .nav-toggle { display: none; }
 
